@@ -61,7 +61,7 @@ router.post('/verify', function(req, res) {
   } catch(e) {
     verified = false;
   }
-  res.json(verified);
+  res.json({success: verified});
 });
 
 // protected add
