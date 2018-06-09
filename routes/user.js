@@ -12,14 +12,16 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res) {
-  if (!req.body.username || !req.body.password) {
-      res.json({success: false, msg: 'Please pass username and password.'});
+  if (!req.body.user) {
+      res.json({success: false, msg: 'Missing data!'});
     } else {
       const newUser = new User({
-        username: req.body.username,
-        password: req.body.password
+        name: req.body.user.name,
+        email: req.body.user.email,
+        password: req.body.user.password,
+        emailConfirmed: false
       });
-      // save the user
+
       newUser.save(function(err) {
         if (err) {
           return res.json({success: false, msg: 'Username already exists.'});
@@ -31,7 +33,7 @@ router.post('/signup', function(req, res) {
 
 router.post('/signin', function(req, res) {
   User.findOne({
-    username: req.body.username
+    email: req.body.email
   }, function(err, user) {
     if (err) throw err;
 
@@ -53,7 +55,7 @@ router.post('/signin', function(req, res) {
   });
 });
 
-router.post('/verify', function(req, res) {
+router.post('/verifyToken', function(req, res) {
   let verified;
   try {
     jwt.verify(req.body.token, process.env.SECRET);
