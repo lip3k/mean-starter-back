@@ -14,6 +14,7 @@ mongoose.connect(process.env.DB_URL, { promiseLibrary: require('bluebird') })
   .then(() =>  console.log('Connected to MongoDB database'))
   .catch((err) => console.error(err));
 
+var apiRoutes = require('./routes/api');
 var userRoutes = require('./routes/user');
 var flashcardRoutes = require('./routes/flashcard');
 
@@ -37,6 +38,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
+app.use('/api/', apiRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/flashcard', flashcardRoutes);
 
