@@ -2,11 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var FlashcardSchema = new Schema({
-  question: {
+  title: {
     type: String,
     required: true
   },
-  answer: {
+  content: {
     type: String,
     required: true
   },
