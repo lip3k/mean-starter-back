@@ -82,6 +82,36 @@ router.post('/create', function(req, res) {
   }
 });
 
+router.delete('/delete/:flashcardID', function(req, res) {
+    const token = getToken(req.headers);
+
+    if (token) {
+        const flashcard = req.params.flashcardID;
+
+        Flashcard.findOneAndDelete({ _id: flashcard }, (err) => {
+
+          if (err) {
+              return res.status(403).send({
+                  success: false,
+                  msg: 'Unauthorized.'
+              });
+          }
+
+            res.json({
+                success: true,
+                msg: 'Card deleted'
+            });
+
+        });
+
+    } else {
+        return res.status(403).send({
+            success: false,
+            msg: 'Unauthorized.'
+        });
+    }
+});
+
 router.put('/update', function(req, res) {
   const token = getToken(req.headers);
 
@@ -123,41 +153,6 @@ router.put('/update', function(req, res) {
   }
 });
 
-router.post('/signin', function(req, res) {
-  User.findOne({
-    email: req.body.email
-  }, function(err, user) {
-    if (err) throw err;
-
-    if (!user) {
-      res.status(401).send({
-        success: false,
-        msg: 'Authentication failed. User not found.'
-      });
-    } else {
-      // check if password matches
-      user.comparePassword(req.body.password, function(err, isMatch) {
-        if (isMatch && !err) {
-          // if user is found and password is right create a token
-          var token = jwt.sign(user.toJSON(), process.env.SECRET, {
-            expiresIn: '1h'
-          });
-          // return the information including token as JSON
-          res.json({
-            success: true,
-            token: token
-          });
-        } else {
-          res.status(401).send({
-            success: false,
-            msg: 'Authentication failed. Wrong password.'
-          });
-        }
-      });
-    }
-  });
-});
-
 router.post('/verifyToken', function(req, res) {
   let verified;
   try {
@@ -170,6 +165,7 @@ router.post('/verifyToken', function(req, res) {
     success: verified
   });
 });
+
 
 // protected add
 router.post('/add', passport.authenticate('jwt', {
@@ -184,6 +180,23 @@ router.post('/add', passport.authenticate('jwt', {
       msg: 'Unauthorized.'
     });
   }
+});
+
+// protected add
+router.delete('/delete/:flashcardID', passport.authenticate('jwt', {
+    session: false
+}), function(req, res) {
+
+    var token = getToken(req.headers);
+    console.log(req.params.flashcardID);
+    // if (token) {
+    //     // create new resource
+    // } else {
+    //     return res.status(403).send({
+    //         success: false,
+    //         msg: 'Unauthorized.'
+    //     });
+    // }
 });
 
 // protected get
